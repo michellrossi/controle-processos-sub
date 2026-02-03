@@ -101,7 +101,19 @@ export function detectColumns(headers: string[]): CSVColumn[] {
   return columns;
 }
 
+function detectDelimiter(text: string): string {
+  const firstLine = text.split('\n')[0] || '';
+  const commaCount = (firstLine.match(/,/g) || []).length;
+  const semicolonCount = (firstLine.match(/;/g) || []).length;
+  const tabCount = (firstLine.match(/\t/g) || []).length;
+  
+  if (semicolonCount > commaCount && semicolonCount > tabCount) return ';';
+  if (tabCount > commaCount && tabCount > semicolonCount) return '\t';
+  return ',';
+}
+
 export function parseCSVText(text: string): string[][] {
+  const delimiter = detectDelimiter(text);
   const lines: string[][] = [];
   let currentLine: string[] = [];
   let currentField = '';
@@ -123,7 +135,7 @@ export function parseCSVText(text: string): string[][] {
     } else {
       if (char === '"') {
         inQuotes = true;
-      } else if (char === ',') {
+      } else if (char === delimiter) {
         currentLine.push(currentField.trim());
         currentField = '';
       } else if (char === '\n' || (char === '\r' && nextChar === '\n')) {
@@ -149,18 +161,35 @@ export function parseCSVText(text: string): string[][] {
 function findClosestMatch(value: string, validValues: readonly string[]): string | null {
   const normalizedValue = normalizeColumnName(value);
   
-  // Match exato (case-insensitive)
+  // Match exato (case-insensitive, sem acentos)
   const exactMatch = validValues.find(
     (v) => normalizeColumnName(v) === normalizedValue
   );
   if (exactMatch) return exactMatch;
 
-  // Match parcial
-  const partialMatch = validValues.find(
-    (v) => normalizeColumnName(v).includes(normalizedValue) || 
-           normalizedValue.includes(normalizeColumnName(v))
+  // Match sem pontuação (para casos como "A.R." vs "AR")
+  const noPunctValue = normalizedValue.replace(/[.\-]/g, '').replace(/\s+/g, ' ');
+  const noPunctMatch = validValues.find(
+    (v) => normalizeColumnName(v).replace(/[.\-]/g, '').replace(/\s+/g, ' ') === noPunctValue
   );
+  if (noPunctMatch) return noPunctMatch;
+
+  // Match parcial - valor contém ou está contido
+  const partialMatch = validValues.find((v) => {
+    const normalizedValid = normalizeColumnName(v);
+    return normalizedValid.includes(normalizedValue) || normalizedValue.includes(normalizedValid);
+  });
   if (partialMatch) return partialMatch;
+
+  // Match por palavras-chave principais
+  const keywords = normalizedValue.split(' ').filter(w => w.length > 2);
+  if (keywords.length > 0) {
+    const keywordMatch = validValues.find((v) => {
+      const normalizedValid = normalizeColumnName(v);
+      return keywords.some(kw => normalizedValid.includes(kw));
+    });
+    if (keywordMatch) return keywordMatch;
+  }
 
   return null;
 }

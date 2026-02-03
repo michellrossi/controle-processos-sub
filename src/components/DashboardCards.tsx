@@ -51,7 +51,7 @@ export function DashboardCards({ processos }: DashboardCardsProps) {
 
       {/* Status Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {STATUS_LIST.map((status) => (
+        {STATUS_LIST.filter(status => status !== 'Demanda devolvida').map((status) => (
           <Card 
             key={status} 
             className={`card-hover border ${STATUS_BG_COLORS[status]}`}
