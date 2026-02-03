@@ -158,7 +158,36 @@ export function parseCSVText(text: string): string[][] {
   return lines;
 }
 
+// Normaliza datas para formato YYYY-MM-DD
+function normalizeDate(dateStr: string): string | null {
+  if (!dateStr || dateStr.trim() === '') return null;
+  
+  const cleaned = dateStr.trim();
+  
+  // Já está no formato correto YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(cleaned)) {
+    return cleaned;
+  }
+  
+  // Formato DD/MM/YYYY ou DD-MM-YYYY
+  const brMatch = cleaned.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (brMatch) {
+    const [, day, month, year] = brMatch;
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+  
+  // Tenta parse genérico
+  const date = new Date(cleaned);
+  if (!isNaN(date.getTime())) {
+    return date.toISOString().split('T')[0];
+  }
+  
+  return null;
+}
+
 function findClosestMatch(value: string, validValues: readonly string[]): string | null {
+  if (!value || value.trim() === '') return null;
+  
   const normalizedValue = normalizeColumnName(value);
   
   // Match exato (case-insensitive, sem acentos)
@@ -168,28 +197,28 @@ function findClosestMatch(value: string, validValues: readonly string[]): string
   if (exactMatch) return exactMatch;
 
   // Match sem pontuação (para casos como "A.R." vs "AR")
-  const noPunctValue = normalizedValue.replace(/[.\-]/g, '').replace(/\s+/g, ' ');
+  const noPunctValue = normalizedValue.replace(/[.\-]/g, '').replace(/\s+/g, ' ').trim();
   const noPunctMatch = validValues.find(
-    (v) => normalizeColumnName(v).replace(/[.\-]/g, '').replace(/\s+/g, ' ') === noPunctValue
+    (v) => normalizeColumnName(v).replace(/[.\-]/g, '').replace(/\s+/g, ' ').trim() === noPunctValue
   );
   if (noPunctMatch) return noPunctMatch;
 
-  // Match parcial - valor contém ou está contido
+  // Match parcial mais restrito - apenas se o valor normalizado for substancialmente similar
   const partialMatch = validValues.find((v) => {
     const normalizedValid = normalizeColumnName(v);
-    return normalizedValid.includes(normalizedValue) || normalizedValue.includes(normalizedValid);
+    // Requer que pelo menos 70% das palavras coincidam
+    const valueWords = normalizedValue.split(' ').filter(w => w.length > 1);
+    const validWords = normalizedValid.split(' ').filter(w => w.length > 1);
+    
+    if (valueWords.length === 0 || validWords.length === 0) return false;
+    
+    const matchingWords = valueWords.filter(vw => 
+      validWords.some(validW => validW.includes(vw) || vw.includes(validW))
+    );
+    
+    return matchingWords.length >= Math.max(1, Math.ceil(validWords.length * 0.7));
   });
   if (partialMatch) return partialMatch;
-
-  // Match por palavras-chave principais
-  const keywords = normalizedValue.split(' ').filter(w => w.length > 2);
-  if (keywords.length > 0) {
-    const keywordMatch = validValues.find((v) => {
-      const normalizedValid = normalizeColumnName(v);
-      return keywords.some(kw => normalizedValid.includes(kw));
-    });
-    if (keywordMatch) return keywordMatch;
-  }
 
   return null;
 }
@@ -250,7 +279,7 @@ export function validateAndParseCSV(text: string): ValidationResult {
     const numero_sei = getValue('numero_sei') || null;
     const posturaRaw = getValue('postura');
     const sql_numero = getValue('sql_numero') || null;
-    const data_vistoria = getValue('data_vistoria');
+    const dataVistoriaRaw = getValue('data_vistoria');
     const endereco = getValue('endereco') || null;
     const statusRaw = getValue('status');
     const observacoes = getValue('observacoes') || null;
@@ -265,13 +294,25 @@ export function validateAndParseCSV(text: string): ValidationResult {
       });
     }
 
-    if (!data_vistoria) {
+    // Validar e normalizar data
+    let data_vistoria: string | null = null;
+    if (!dataVistoriaRaw) {
       rowErrors.push({
         row: rowNumber,
         field: 'Data Vistoria',
         message: 'Campo obrigatório',
-        value: data_vistoria,
+        value: dataVistoriaRaw,
       });
+    } else {
+      data_vistoria = normalizeDate(dataVistoriaRaw);
+      if (!data_vistoria) {
+        rowErrors.push({
+          row: rowNumber,
+          field: 'Data Vistoria',
+          message: 'Formato de data inválido. Use DD/MM/YYYY ou YYYY-MM-DD',
+          value: dataVistoriaRaw,
+        });
+      }
     }
 
     // Validar e tentar corrigir postura
@@ -320,7 +361,7 @@ export function validateAndParseCSV(text: string): ValidationResult {
       }
     }
 
-    if (rowErrors.length === 0 && postura && status) {
+    if (rowErrors.length === 0 && postura && status && data_vistoria) {
       validRows.push({
         numero_demanda,
         numero_sei,

@@ -86,6 +86,9 @@ export function useProcessos() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
+      // Log para debug - verificar dados antes de enviar
+      console.log('Importando processos:', JSON.stringify(processosToImport.slice(0, 2), null, 2));
+
       const processosWithUserId = processosToImport.map(p => ({ ...p, user_id: user.id }));
       
       const { data, error } = await supabase
@@ -93,7 +96,17 @@ export function useProcessos() {
         .insert(processosWithUserId)
         .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Erro Supabase:', error);
+        // Mensagem mais detalhada sobre o erro
+        if (error.message.includes('invalid input value for enum')) {
+          const match = error.message.match(/invalid input value for enum (\w+): "([^"]+)"/);
+          if (match) {
+            throw new Error(`Valor inválido para ${match[1]}: "${match[2]}". Verifique se os valores de Status e Postura estão corretos no arquivo CSV.`);
+          }
+        }
+        throw error;
+      }
       return data;
     },
     onSuccess: (data) => {
