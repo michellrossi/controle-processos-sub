@@ -97,7 +97,7 @@ export function FilterBar({
 
       {/* Status Toggle Buttons */}
       <div className="flex flex-wrap gap-2">
-        {STATUS_LIST.map((status) => (
+        {STATUS_LIST.filter(status => status !== 'Demanda devolvida').map((status) => (
           <Button
             key={status}
             variant="outline"
