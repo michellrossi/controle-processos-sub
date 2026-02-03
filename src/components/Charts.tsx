@@ -19,12 +19,13 @@ interface ChartsProps {
 }
 
 const STATUS_CHART_COLORS: Record<StatusType, string> = {
-  'Em análise': '#4a90d9',
-  'Vistoriado': '#9b59b6',
-  'Notificado': '#f39c12',
-  'Regularizado': '#27ae60',
-  'Irregular': '#e74c3c',
-  'Arquivado': '#7f8c8d',
+  'Ação necessária': '#e74c3c',
+  'Demanda concluída': '#27ae60',
+  'Demanda devolvida': '#9b59b6',
+  'Demanda agrupada': '#4a90d9',
+  'Auto emitido': '#f39c12',
+  'A.R. devolvido': '#e91e63',
+  'A.R. entregue': '#26a69a',
 };
 
 export function Charts({ processos }: ChartsProps) {

@@ -21,12 +21,13 @@ interface FilterBarProps {
 }
 
 const STATUS_TOGGLE_COLORS: Record<StatusType, string> = {
-  'Em análise': 'data-[active=true]:bg-status-analise data-[active=true]:text-white',
-  'Vistoriado': 'data-[active=true]:bg-status-vistoriado data-[active=true]:text-white',
-  'Notificado': 'data-[active=true]:bg-status-notificado data-[active=true]:text-white',
-  'Regularizado': 'data-[active=true]:bg-status-regularizado data-[active=true]:text-white',
-  'Irregular': 'data-[active=true]:bg-status-irregular data-[active=true]:text-white',
-  'Arquivado': 'data-[active=true]:bg-status-arquivado data-[active=true]:text-white',
+  'Ação necessária': 'data-[active=true]:bg-status-acao data-[active=true]:text-white',
+  'Demanda concluída': 'data-[active=true]:bg-status-concluida data-[active=true]:text-white',
+  'Demanda devolvida': 'data-[active=true]:bg-status-devolvida data-[active=true]:text-white',
+  'Demanda agrupada': 'data-[active=true]:bg-status-agrupada data-[active=true]:text-white',
+  'Auto emitido': 'data-[active=true]:bg-status-auto data-[active=true]:text-white',
+  'A.R. devolvido': 'data-[active=true]:bg-status-ar-devolvido data-[active=true]:text-white',
+  'A.R. entregue': 'data-[active=true]:bg-status-ar-entregue data-[active=true]:text-white',
 };
 
 export function FilterBar({

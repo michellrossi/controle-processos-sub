@@ -5,7 +5,6 @@ import { Processo, POSTURAS, STATUS_LIST, PosturaType, StatusType } from '@/type
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -45,6 +44,36 @@ interface ProcessoFormProps {
   isSubmitting?: boolean;
 }
 
+// Format SEI: xxxx.xxxx/xxxxxxx-x
+function formatSEI(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 16);
+  let formatted = '';
+  
+  for (let i = 0; i < digits.length; i++) {
+    if (i === 4) formatted += '.';
+    if (i === 8) formatted += '/';
+    if (i === 15) formatted += '-';
+    formatted += digits[i];
+  }
+  
+  return formatted;
+}
+
+// Format SQL: xxx.xxx.xxxx-x
+function formatSQL(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  let formatted = '';
+  
+  for (let i = 0; i < digits.length; i++) {
+    if (i === 3) formatted += '.';
+    if (i === 6) formatted += '.';
+    if (i === 10) formatted += '-';
+    formatted += digits[i];
+  }
+  
+  return formatted;
+}
+
 export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: ProcessoFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -55,7 +84,7 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
       sql_numero: processo?.sql_numero ?? '',
       data_vistoria: processo?.data_vistoria ?? '',
       endereco: processo?.endereco ?? '',
-      status: processo?.status ?? 'Em análise',
+      status: processo?.status ?? 'Ação necessária',
       observacoes: processo?.observacoes ?? '',
     },
   });
@@ -97,8 +126,11 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                 <FormControl>
                   <Input 
                     placeholder="xxxx.xxxx/xxxxxxx-x" 
-                    {...field} 
                     value={field.value ?? ''} 
+                    onChange={(e) => {
+                      const formatted = formatSEI(e.target.value);
+                      field.onChange(formatted);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -140,8 +172,11 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                 <FormControl>
                   <Input 
                     placeholder="xxx.xxx.xxxx-x" 
-                    {...field} 
                     value={field.value ?? ''} 
+                    onChange={(e) => {
+                      const formatted = formatSQL(e.target.value);
+                      field.onChange(formatted);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

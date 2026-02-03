@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
@@ -37,12 +37,13 @@
     --radius: 0.5rem;
 
     /* Status Colors */
-    --status-analise: 217 91% 60%;
-    --status-vistoriado: 271 81% 56%;
-    --status-notificado: 25 95% 53%;
-    --status-regularizado: 142 76% 36%;
-    --status-irregular: 0 84% 60%;
-    --status-arquivado: 215 14% 55%;
+    --status-acao: 0 84% 60%;
+    --status-concluida: 142 76% 36%;
+    --status-devolvida: 271 81% 56%;
+    --status-agrupada: 217 91% 60%;
+    --status-auto: 25 95% 53%;
+    --status-ar-devolvido: 340 82% 52%;
+    --status-ar-entregue: 168 76% 42%;
 
     /* Sidebar */
     --sidebar-background: 217 33% 17%;
@@ -96,35 +97,39 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 }
 
 @layer components {
   /* Status badges */
-  .badge-analise {
-    @apply bg-[hsl(var(--status-analise))] text-white;
+  .badge-acao {
+    @apply bg-[hsl(var(--status-acao))] text-white;
   }
   
-  .badge-vistoriado {
-    @apply bg-[hsl(var(--status-vistoriado))] text-white;
+  .badge-concluida {
+    @apply bg-[hsl(var(--status-concluida))] text-white;
   }
   
-  .badge-notificado {
-    @apply bg-[hsl(var(--status-notificado))] text-white;
+  .badge-devolvida {
+    @apply bg-[hsl(var(--status-devolvida))] text-white;
   }
   
-  .badge-regularizado {
-    @apply bg-[hsl(var(--status-regularizado))] text-white;
+  .badge-agrupada {
+    @apply bg-[hsl(var(--status-agrupada))] text-white;
   }
   
-  .badge-irregular {
-    @apply bg-[hsl(var(--status-irregular))] text-white;
+  .badge-auto {
+    @apply bg-[hsl(var(--status-auto))] text-white;
   }
   
-  .badge-arquivado {
-    @apply bg-[hsl(var(--status-arquivado))] text-white;
+  .badge-ar-devolvido {
+    @apply bg-[hsl(var(--status-ar-devolvido))] text-white;
+  }
+  
+  .badge-ar-entregue {
+    @apply bg-[hsl(var(--status-ar-entregue))] text-white;
   }
 
   /* Card hover effect */

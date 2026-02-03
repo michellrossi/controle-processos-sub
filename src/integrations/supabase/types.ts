@@ -86,12 +86,13 @@ export type Database = {
         | "Comando Noturno"
         | "Manejo Arbóreo"
       status_type:
-        | "Em análise"
-        | "Vistoriado"
-        | "Notificado"
-        | "Regularizado"
-        | "Irregular"
-        | "Arquivado"
+        | "Ação necessária"
+        | "Demanda concluída"
+        | "Demanda devolvida"
+        | "Demanda agrupada"
+        | "Auto emitido"
+        | "A.R. devolvido"
+        | "A.R. entregue"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -239,12 +240,13 @@ export const Constants = {
         "Manejo Arbóreo",
       ],
       status_type: [
-        "Em análise",
-        "Vistoriado",
-        "Notificado",
-        "Regularizado",
-        "Irregular",
-        "Arquivado",
+        "Ação necessária",
+        "Demanda concluída",
+        "Demanda devolvida",
+        "Demanda agrupada",
+        "Auto emitido",
+        "A.R. devolvido",
+        "A.R. entregue",
       ],
     },
   },

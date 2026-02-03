@@ -18,12 +18,13 @@ export type PosturaType =
   | 'Manejo Arbóreo';
 
 export type StatusType =
-  | 'Em análise'
-  | 'Vistoriado'
-  | 'Notificado'
-  | 'Regularizado'
-  | 'Irregular'
-  | 'Arquivado';
+  | 'Ação necessária'
+  | 'Demanda concluída'
+  | 'Demanda devolvida'
+  | 'Demanda agrupada'
+  | 'Auto emitido'
+  | 'A.R. devolvido'
+  | 'A.R. entregue';
 
 export interface Processo {
   id: string;
@@ -61,19 +62,21 @@ export const POSTURAS: PosturaType[] = [
 ];
 
 export const STATUS_LIST: StatusType[] = [
-  'Em análise',
-  'Vistoriado',
-  'Notificado',
-  'Regularizado',
-  'Irregular',
-  'Arquivado',
+  'Ação necessária',
+  'Demanda concluída',
+  'Demanda devolvida',
+  'Demanda agrupada',
+  'Auto emitido',
+  'A.R. devolvido',
+  'A.R. entregue',
 ];
 
 export const STATUS_COLORS: Record<StatusType, { bg: string; text: string; label: string }> = {
-  'Em análise': { bg: 'bg-status-analise', text: 'text-white', label: 'Em análise' },
-  'Vistoriado': { bg: 'bg-status-vistoriado', text: 'text-white', label: 'Vistoriado' },
-  'Notificado': { bg: 'bg-status-notificado', text: 'text-white', label: 'Notificado' },
-  'Regularizado': { bg: 'bg-status-regularizado', text: 'text-white', label: 'Regularizado' },
-  'Irregular': { bg: 'bg-status-irregular', text: 'text-white', label: 'Irregular' },
-  'Arquivado': { bg: 'bg-status-arquivado', text: 'text-white', label: 'Arquivado' },
+  'Ação necessária': { bg: 'bg-status-acao', text: 'text-white', label: 'Ação necessária' },
+  'Demanda concluída': { bg: 'bg-status-concluida', text: 'text-white', label: 'Demanda concluída' },
+  'Demanda devolvida': { bg: 'bg-status-devolvida', text: 'text-white', label: 'Demanda devolvida' },
+  'Demanda agrupada': { bg: 'bg-status-agrupada', text: 'text-white', label: 'Demanda agrupada' },
+  'Auto emitido': { bg: 'bg-status-auto', text: 'text-white', label: 'Auto emitido' },
+  'A.R. devolvido': { bg: 'bg-status-ar-devolvido', text: 'text-white', label: 'A.R. devolvido' },
+  'A.R. entregue': { bg: 'bg-status-ar-entregue', text: 'text-white', label: 'A.R. entregue' },
 };

@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,12 +61,13 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         status: {
-          analise: "hsl(var(--status-analise))",
-          vistoriado: "hsl(var(--status-vistoriado))",
-          notificado: "hsl(var(--status-notificado))",
-          regularizado: "hsl(var(--status-regularizado))",
-          irregular: "hsl(var(--status-irregular))",
-          arquivado: "hsl(var(--status-arquivado))",
+          acao: "hsl(var(--status-acao))",
+          concluida: "hsl(var(--status-concluida))",
+          devolvida: "hsl(var(--status-devolvida))",
+          agrupada: "hsl(var(--status-agrupada))",
+          auto: "hsl(var(--status-auto))",
+          "ar-devolvido": "hsl(var(--status-ar-devolvido))",
+          "ar-entregue": "hsl(var(--status-ar-entregue))",
         },
       },
       borderRadius: {
