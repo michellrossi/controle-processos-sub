@@ -81,6 +81,25 @@ export function useProcessos() {
     },
   });
 
+  const deleteMany = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from('processos')
+        .delete()
+        .in('id', ids);
+      
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['processos'] });
+      toast({ title: 'Sucesso', description: `${count} processos excluídos com sucesso!` });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Erro', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const importProcessos = useMutation({
     mutationFn: async (processosToImport: Omit<Processo, 'id' | 'user_id' | 'created_at' | 'updated_at'>[]) => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -125,6 +144,7 @@ export function useProcessos() {
     createProcesso,
     updateProcesso,
     deleteProcesso,
+    deleteMany,
     importProcessos,
   };
 }

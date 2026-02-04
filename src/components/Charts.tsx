@@ -36,11 +36,11 @@ export function Charts({ processos }: ChartsProps) {
     color: STATUS_CHART_COLORS[status],
   })).filter((d) => d.value > 0);
 
-  // Data for postura bar chart
-  const posturaData = POSTURAS.map((postura) => ({
+  // Data for postura bar chart - show ALL posturas
+  const allPosturaData = POSTURAS.map((postura) => ({
     name: postura,
     quantidade: processos.filter((p) => p.postura === postura).length,
-  })).filter((d) => d.quantidade > 0);
+  }));
 
   if (processos.length === 0) {
     return (
@@ -88,20 +88,21 @@ export function Charts({ processos }: ChartsProps) {
           <CardTitle className="text-lg">Processos por Postura</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="h-[500px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={posturaData}
+                data={allPosturaData}
                 layout="vertical"
-                margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
+                <XAxis type="number" allowDecimals={false} />
                 <YAxis 
                   dataKey="name" 
                   type="category" 
-                  tick={{ fontSize: 12 }}
-                  width={90}
+                  tick={{ fontSize: 11 }}
+                  width={110}
+                  interval={0}
                 />
                 <Tooltip />
                 <Bar dataKey="quantidade" fill="hsl(217 91% 45%)" radius={[0, 4, 4, 0]} />
