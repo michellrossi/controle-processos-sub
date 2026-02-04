@@ -66,23 +66,45 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
     toast({ title: 'Sucesso', description: `${processos.length} processos exportados.` });
   };
 
+  // Detecta se o texto tem caracteres inválidos (encoding incorreto)
+  const hasInvalidChars = (text: string): boolean => {
+    // Caractere de substituição Unicode (aparece quando encoding falha)
+    return text.includes('\uFFFD') || /�/.test(text);
+  };
+
+  const processFile = (text: string) => {
+    try {
+      const result = validateAndParseCSV(text);
+      setValidation(result);
+      setShowPreview(true);
+    } catch (error) {
+      toast({ title: 'Erro', description: 'Falha ao processar o arquivo CSV.', variant: 'destructive' });
+    }
+  };
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result as string;
-        const result = validateAndParseCSV(text);
-        setValidation(result);
-        setShowPreview(true);
-      } catch (error) {
-        toast({ title: 'Erro', description: 'Falha ao processar o arquivo CSV.', variant: 'destructive' });
+    // Primeiro tenta UTF-8
+    const readerUtf8 = new FileReader();
+    readerUtf8.onload = (e) => {
+      const text = e.target?.result as string;
+      
+      // Se UTF-8 tem caracteres inválidos, tenta Latin1 (windows-1252)
+      if (hasInvalidChars(text)) {
+        const readerLatin = new FileReader();
+        readerLatin.onload = (e2) => {
+          const textLatin = e2.target?.result as string;
+          processFile(textLatin);
+        };
+        readerLatin.readAsText(file, 'windows-1252');
+      } else {
+        processFile(text);
       }
     };
 
-    reader.readAsText(file);
+    readerUtf8.readAsText(file, 'UTF-8');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
