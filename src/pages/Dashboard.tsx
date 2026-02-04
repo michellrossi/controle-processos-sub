@@ -30,6 +30,7 @@ export function Dashboard() {
     createProcesso,
     updateProcesso,
     deleteProcesso,
+    deleteMany,
     importProcessos,
   } = useProcessos();
 
@@ -167,6 +168,7 @@ export function Dashboard() {
                   processos={filteredProcessos}
                   onUpdate={(data) => updateProcesso.mutate(data)}
                   onDelete={(id) => deleteProcesso.mutate(id)}
+                  onDeleteMany={(ids) => deleteMany.mutate(ids)}
                   isUpdating={updateProcesso.isPending}
                 />
               </CardContent>
