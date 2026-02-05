@@ -141,10 +141,15 @@ export function useProcessos() {
     processos,
     isLoading,
     error,
-    createProcesso,
-    updateProcesso,
-    deleteProcesso,
-    deleteMany,
-    importProcessos,
+    // Retorna as funções diretas para facilitar o uso nos componentes
+    createProcesso: createProcesso.mutate,
+    updateProcesso: updateProcesso.mutate,
+    deleteProcesso: deleteProcesso.mutate,
+    deleteMany: deleteMany.mutate,
+    importProcessos: importProcessos.mutate,
+    // Retorna estados de loading úteis
+    isUpdating: updateProcesso.isPending, 
+    isCreating: createProcesso.isPending,
+    isDeleting: deleteProcesso.isPending
   };
 }

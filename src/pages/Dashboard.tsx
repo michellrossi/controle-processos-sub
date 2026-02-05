@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
 export default function Dashboard() {
-  const { processos, loading, updateProcesso, deleteProcesso, deleteManyProcessos, isUpdating } = useProcessos();
+  const { processos, loading, updateProcesso, deleteProcesso, deleteMany, isUpdating } = useProcessos();
   // Estado agora tipado para aceitar StatusType ou a string literal 'Todos'
   const [statusFilter, setStatusFilter] = useState<StatusType | 'Todos'>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +89,7 @@ export default function Dashboard() {
             processos={filteredProcessos}
             onUpdate={updateProcesso}
             onDelete={deleteProcesso}
-            onDeleteMany={deleteManyProcessos}
+            onDeleteMany={deleteMany}
             isUpdating={isUpdating}
           />
         </div>
