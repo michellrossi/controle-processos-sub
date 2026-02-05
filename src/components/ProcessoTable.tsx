@@ -152,10 +152,10 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
         </div>
       )}
 
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50">
+            <TableRow className="bg-muted/30 hover:bg-muted/30">
               {onDeleteMany && (
                 <TableHead className="w-12 text-center">
                   <Checkbox
@@ -170,19 +170,19 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                   />
                 </TableHead>
               )}
-              <TableHead className="font-semibold text-center">Nº Demanda</TableHead>
-              <TableHead className="font-semibold text-center">Nº SEI</TableHead>
-              <TableHead className="font-semibold text-center">Postura</TableHead>
-              <TableHead className="font-semibold text-center">SQL</TableHead>
-              <TableHead className="font-semibold text-center">Data Vistoria</TableHead>
-              <TableHead className="font-semibold text-center">Endereço</TableHead>
-              <TableHead className="font-semibold text-center">Status</TableHead>
-              <TableHead className="font-semibold text-center">Ações</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Nº Demanda</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Nº SEI</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Postura</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">SQL</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Data Vistoria</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Endereço</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Status</TableHead>
+              <TableHead className="font-semibold text-center text-xs uppercase tracking-wider text-muted-foreground">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {processos.map((processo) => (
-              <TableRow key={processo.id} className="table-row-hover">
+              <TableRow key={processo.id} className="table-row-hover transition-all">
                 {onDeleteMany && (
                   <TableCell className="text-center">
                     <Checkbox
@@ -192,12 +192,13 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                     />
                   </TableCell>
                 )}
-                <TableCell className="font-medium text-center">{processo.numero_demanda}</TableCell>
-                <TableCell className="font-mono text-sm text-center">{processo.numero_sei || '-'}</TableCell>
-                <TableCell className="text-center">{processo.postura}</TableCell>
-                <TableCell className="font-mono text-sm text-center">{processo.sql_numero || '-'}</TableCell>
-                <TableCell className="text-center">{formatDate(processo.data_vistoria)}</TableCell>
-                <TableCell className="max-w-[200px] truncate text-center" title={processo.endereco || ''}>
+                {/* REMOVIDO font-mono DAS LINHAS ABAIXO */}
+                <TableCell className="font-medium text-center text-sm">{processo.numero_demanda}</TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">{processo.numero_sei || '-'}</TableCell>
+                <TableCell className="text-center text-sm">{processo.postura}</TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">{processo.sql_numero || '-'}</TableCell>
+                <TableCell className="text-center text-sm">{formatDate(processo.data_vistoria)}</TableCell>
+                <TableCell className="max-w-[200px] truncate text-center text-sm" title={processo.endereco || ''}>
                   {processo.endereco || '-'}
                 </TableCell>
                 <TableCell className="text-center">
@@ -208,6 +209,7 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary"
                       onClick={() => handleOpenObservacoes(processo)}
                       title="Ver observações"
                     >
@@ -216,6 +218,7 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary"
                       onClick={() => handleOpenEdit(processo)}
                       title="Editar"
                     >
@@ -226,7 +229,7 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                       size="icon"
                       onClick={() => handleOpenDelete(processo)}
                       title="Excluir"
-                      className="text-destructive hover:text-destructive"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -238,7 +241,7 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
         </Table>
       </div>
 
-      {/* Modal de Observações */}
+      {/* Modais mantidos iguais, apenas código de renderização acima alterado */}
       <Dialog open={showObservacoes} onOpenChange={setShowObservacoes}>
         <DialogContent>
           <DialogHeader>
@@ -251,13 +254,12 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
             {selectedProcesso?.observacoes ? (
               <p className="text-sm whitespace-pre-wrap">{selectedProcesso.observacoes}</p>
             ) : (
-              <p className="text-sm text-muted-foreground italic">Nenhuma observação registrada.</p>
+              <p className="text-sm text-muted-foreground">Nenhuma observação registrada.</p>
             )}
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Edição */}
       <Dialog open={showEdit} onOpenChange={setShowEdit}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -277,7 +279,6 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
         </DialogContent>
       </Dialog>
 
-      {/* Confirmação de Exclusão Individual */}
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -296,7 +297,6 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Confirmação de Exclusão em Lote */}
       <AlertDialog open={showDeleteMany} onOpenChange={setShowDeleteMany}>
         <AlertDialogContent>
           <AlertDialogHeader>

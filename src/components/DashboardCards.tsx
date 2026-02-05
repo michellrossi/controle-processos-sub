@@ -1,29 +1,55 @@
-import { Processo, STATUS_LIST, StatusType, POSTURAS } from '@/types/processo';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, CheckCircle, AlertCircle, Clock, Archive, Send, Mail, Layers } from 'lucide-react';
+import { Processo, STATUS_LIST, StatusType } from '@/types/processo';
+import { Card, CardContent } from '@/components/ui/card';
+import { FileText, CheckCircle, AlertCircle, Archive, Send, Mail, Layers } from 'lucide-react';
 
 interface DashboardCardsProps {
   processos: Processo[];
 }
 
-const STATUS_ICONS: Record<StatusType, React.ReactNode> = {
-  'Ação necessária': <AlertCircle className="h-5 w-5" />,
-  'Demanda concluída': <CheckCircle className="h-5 w-5" />,
-  'Demanda devolvida': <Archive className="h-5 w-5" />,
-  'Demanda agrupada': <Layers className="h-5 w-5" />,
-  'Auto emitido': <Send className="h-5 w-5" />,
-  'A.R. devolvido': <Mail className="h-5 w-5" />,
-  'A.R. entregue': <Mail className="h-5 w-5" />,
-};
-
-const STATUS_BG_COLORS: Record<StatusType, string> = {
-  'Ação necessária': 'bg-status-acao/10 text-status-acao border-status-acao/20',
-  'Demanda concluída': 'bg-status-concluida/10 text-status-concluida border-status-concluida/20',
-  'Demanda devolvida': 'bg-status-devolvida/10 text-status-devolvida border-status-devolvida/20',
-  'Demanda agrupada': 'bg-status-agrupada/10 text-status-agrupada border-status-agrupada/20',
-  'Auto emitido': 'bg-status-auto/10 text-status-auto border-status-auto/20',
-  'A.R. devolvido': 'bg-status-ar-devolvido/10 text-status-ar-devolvido border-status-ar-devolvido/20',
-  'A.R. entregue': 'bg-status-ar-entregue/10 text-status-ar-entregue border-status-ar-entregue/20',
+// Configuração de cores e ícones moderna (Estilo App)
+const CARD_CONFIG: Record<StatusType, { icon: React.ReactNode; color: string; bg: string; iconColor: string }> = {
+  'Ação necessária': { 
+    icon: <AlertCircle className="h-8 w-8" />, 
+    color: 'border-red-100', 
+    bg: 'bg-red-500', 
+    iconColor: 'text-white' 
+  },
+  'Demanda concluída': { 
+    icon: <CheckCircle className="h-8 w-8" />, 
+    color: 'border-emerald-100', 
+    bg: 'bg-emerald-500', 
+    iconColor: 'text-white' 
+  },
+  'Demanda devolvida': { 
+    icon: <Archive className="h-8 w-8" />, 
+    color: 'border-purple-100', 
+    bg: 'bg-purple-500', 
+    iconColor: 'text-white' 
+  },
+  'Demanda agrupada': { 
+    icon: <Layers className="h-8 w-8" />, 
+    color: 'border-blue-100', 
+    bg: 'bg-blue-500', 
+    iconColor: 'text-white' 
+  },
+  'Auto emitido': { 
+    icon: <Send className="h-8 w-8" />, 
+    color: 'border-orange-100', 
+    bg: 'bg-orange-500', 
+    iconColor: 'text-white' 
+  },
+  'A.R. devolvido': { 
+    icon: <Mail className="h-8 w-8" />, 
+    color: 'border-rose-100', 
+    bg: 'bg-rose-500', 
+    iconColor: 'text-white' 
+  },
+  'A.R. entregue': { 
+    icon: <Mail className="h-8 w-8" />, 
+    color: 'border-teal-100', 
+    bg: 'bg-teal-500', 
+    iconColor: 'text-white' 
+  },
 };
 
 export function DashboardCards({ processos }: DashboardCardsProps) {
@@ -35,38 +61,50 @@ export function DashboardCards({ processos }: DashboardCardsProps) {
   }, {} as Record<StatusType, number>);
 
   return (
-    <div className="space-y-6">
-      {/* Total Card */}
-      <Card className="card-hover border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
-            Total de Processos
-          </CardTitle>
-          <FileText className="h-5 w-5 text-primary" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-4xl font-bold text-primary">{total}</div>
-        </CardContent>
-      </Card>
+    <div className="space-y-8">
+      {/* Total Card - Destaque */}
+      <div className="flex justify-center">
+        <Card className="border-none shadow-none bg-transparent">
+          <CardContent className="flex flex-col items-center p-0">
+            <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/25 mb-3">
+              <FileText className="h-10 w-10 text-white" />
+            </div>
+            <h2 className="text-3xl font-bold text-primary">{total}</h2>
+            <p className="text-sm font-medium text-muted-foreground">Total de Processos</p>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Status Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {STATUS_LIST.filter(status => status !== 'Demanda devolvida').map((status) => (
-          <Card 
-            key={status} 
-            className={`card-hover border ${STATUS_BG_COLORS[status]}`}
-          >
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs font-medium opacity-80">
-                {status}
-              </CardTitle>
-              {STATUS_ICONS[status]}
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{countByStatus[status]}</div>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Grid de Status - Estilo App */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        {STATUS_LIST.filter(status => status !== 'Demanda devolvida').map((status) => {
+          const config = CARD_CONFIG[status];
+          return (
+            <Card 
+              key={status} 
+              className="group border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-card hover:-translate-y-1 overflow-hidden"
+            >
+              <CardContent className="p-4 flex flex-col items-center text-center h-full justify-between gap-3">
+                
+                {/* Ícone com fundo colorido arredondado */}
+                <div className={`p-3 rounded-2xl ${config.bg} shadow-md`}>
+                   <div className={config.iconColor}>
+                     {config.icon}
+                   </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-2xl font-bold block text-foreground">
+                    {countByStatus[status]}
+                  </span>
+                  <span className="text-xs font-medium text-muted-foreground line-clamp-2 px-1">
+                    {status}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
