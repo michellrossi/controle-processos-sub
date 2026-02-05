@@ -5,27 +5,33 @@ import { DashboardCards } from '@/components/DashboardCards';
 import { ProcessoTable } from '@/components/ProcessoTable';
 import { FilterBar } from '@/components/FilterBar';
 import { Header } from '@/components/Header';
-import { StatusType } from '@/types/processo';
+import { ProcessoForm } from '@/components/ProcessoForm';
+import { StatusType, Processo } from '@/types/processo';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Search, Plus, FileText } from 'lucide-react';
 
 export default function Dashboard() {
-  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, isUpdating } = useProcessos();
+  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, isUpdating, isCreating } = useProcessos();
   const { user, signOut } = useAuth();
-  // Estado agora tipado para aceitar StatusType ou a string literal 'Todos'
   const [statusFilter, setStatusFilter] = useState<StatusType | 'Todos'>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-  // Lógica de filtragem atualizada
   const filteredProcessos = useMemo(() => {
     return processos.filter((processo) => {
-      // 1. Filtro de Status
       const matchesStatus = statusFilter === 'Todos' 
         ? true 
         : processo.status === statusFilter;
 
-      // 2. Filtro de Busca (Texto)
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
         processo.numero_demanda?.toLowerCase().includes(searchLower) ||
@@ -36,6 +42,11 @@ export default function Dashboard() {
       return matchesStatus && matchesSearch;
     });
   }, [processos, statusFilter, searchTerm]);
+
+  const handleCreateProcesso = (data: Partial<Processo>) => {
+    createProcesso(data as Omit<Processo, 'id' | 'user_id' | 'created_at' | 'updated_at'>);
+    setIsCreateDialogOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -50,13 +61,25 @@ export default function Dashboard() {
       <Header userEmail={user?.email} onSignOut={signOut} />
       
       <main className="container mx-auto px-4 pt-4 space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-            Painel de Controle
-          </h1>
-          <p className="text-muted-foreground">
-            Gerencie e acompanhe todos os processos e demandas.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+              Painel de Controle
+            </h1>
+            <p className="text-muted-foreground">
+              Gerencie e acompanhe todos os processos e demandas.
+            </p>
+          </div>
+          
+          {/* Botão Criar Novo Processo */}
+          <Button 
+            onClick={() => setIsCreateDialogOpen(true)}
+            size="lg"
+            className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
+          >
+            <Plus className="h-5 w-5" />
+            Novo Processo
+          </Button>
         </div>
 
         {/* Cards de Resumo - sempre mostra todos os processos */}
@@ -78,7 +101,7 @@ export default function Dashboard() {
                 />
               </div>
 
-              {/* Barra de Filtros (Conectada Corretamente) */}
+              {/* Barra de Filtros */}
               <FilterBar 
                 currentFilter={statusFilter} 
                 onFilterChange={setStatusFilter} 
@@ -96,6 +119,31 @@ export default function Dashboard() {
           />
         </div>
       </main>
+
+      {/* Modal de Criação de Processo */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="space-y-3 pb-4 border-b">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 text-primary">
+                <FileText className="h-6 w-6" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold">Novo Processo</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  Preencha os dados para cadastrar um novo processo no sistema.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <ProcessoForm 
+            onSubmit={handleCreateProcesso}
+            onCancel={() => setIsCreateDialogOpen(false)}
+            isSubmitting={isCreating}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
