@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { AuthForm } from '@/components/AuthForm';
-import { Dashboard } from './Dashboard';
+import Dashboard from './Dashboard';
 import { Loader2 } from 'lucide-react';
 
 const Index = () => {

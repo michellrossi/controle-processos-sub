@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useProcessos } from '@/hooks/useProcessos';
+import { useAuth } from '@/hooks/useAuth';
 import { DashboardCards } from '@/components/DashboardCards';
 import { ProcessoTable } from '@/components/ProcessoTable';
 import { FilterBar } from '@/components/FilterBar';
@@ -10,7 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
 export default function Dashboard() {
-  const { processos, loading, updateProcesso, deleteProcesso, deleteMany, isUpdating } = useProcessos();
+  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, isUpdating } = useProcessos();
+  const { user, signOut } = useAuth();
   // Estado agora tipado para aceitar StatusType ou a string literal 'Todos'
   const [statusFilter, setStatusFilter] = useState<StatusType | 'Todos'>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,7 +37,7 @@ export default function Dashboard() {
     });
   }, [processos, statusFilter, searchTerm]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -45,7 +47,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-background space-y-8 pb-10">
-      <Header />
+      <Header userEmail={user?.email} onSignOut={signOut} />
       
       <main className="container mx-auto px-4 pt-4 space-y-8">
         <div className="space-y-2">
