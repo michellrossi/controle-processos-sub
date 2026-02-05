@@ -1,17 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Processo, POSTURAS, STATUS_LIST, PosturaType, StatusType } from '@/types/processo';
+import { Processo, STATUS_LIST, POSTURAS, StatusType } from '@/types/processo';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Form,
   FormControl,
@@ -20,256 +9,153 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-
-const seiRegex = /^\d{4}\.\d{4}\/\d{7}-\d$/;
-const sqlRegex = /^\d{3}\.\d{3}\.\d{4}-\d$/;
-
-const formSchema = z.object({
-  numero_demanda: z.string().min(1, 'Número da demanda é obrigatório'),
-  numero_sei: z.string().regex(seiRegex, 'Formato: xxxx.xxxx/xxxxxxx-x').or(z.literal('')).nullable(),
-  postura: z.enum(POSTURAS as [PosturaType, ...PosturaType[]]),
-  sql_numero: z.string().regex(sqlRegex, 'Formato: xxx.xxx.xxxx-x').or(z.literal('')).nullable(),
-  data_vistoria: z.string().min(1, 'Data da vistoria é obrigatória'),
-  endereco: z.string().nullable(),
-  status: z.enum(STATUS_LIST as [StatusType, ...StatusType[]]),
-  observacoes: z.string().nullable(),
-});
-
-type FormData = z.infer<typeof formSchema>;
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  FileText, 
+  MapPin, 
+  Calendar, 
+  Hash, 
+  FileDigit, 
+  AlertCircle,
+  Save,
+  X
+} from 'lucide-react';
 
 interface ProcessoFormProps {
   processo?: Processo;
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: Partial<Processo>) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
 
-// Format SEI: xxxx.xxxx/xxxxxxx-x
-function formatSEI(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 16);
-  let formatted = '';
-  
-  for (let i = 0; i < digits.length; i++) {
-    if (i === 4) formatted += '.';
-    if (i === 8) formatted += '/';
-    if (i === 15) formatted += '-';
-    formatted += digits[i];
-  }
-  
-  return formatted;
-}
-
-// Format SQL: xxx.xxx.xxxx-x
-function formatSQL(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 11);
-  let formatted = '';
-  
-  for (let i = 0; i < digits.length; i++) {
-    if (i === 3) formatted += '.';
-    if (i === 6) formatted += '.';
-    if (i === 10) formatted += '-';
-    formatted += digits[i];
-  }
-  
-  return formatted;
-}
-
 export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: ProcessoFormProps) {
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      numero_demanda: processo?.numero_demanda ?? '',
-      numero_sei: processo?.numero_sei ?? '',
-      postura: processo?.postura ?? 'ATIVIDADE',
-      sql_numero: processo?.sql_numero ?? '',
-      data_vistoria: processo?.data_vistoria ?? '',
-      endereco: processo?.endereco ?? '',
-      status: processo?.status ?? 'Ação necessária',
-      observacoes: processo?.observacoes ?? '',
+  const form = useForm<Partial<Processo>>({
+    defaultValues: processo || {
+      numero_demanda: '',
+      numero_sei: '',
+      postura: 'Leste',
+      sql_numero: '',
+      data_vistoria: new Date().toISOString().split('T')[0],
+      endereco: '',
+      status: 'Ação necessária',
+      observacoes: '',
     },
   });
 
-  const handleSubmit = (data: FormData) => {
-    onSubmit({
-      ...data,
-      numero_sei: data.numero_sei || null,
-      sql_numero: data.sql_numero || null,
-      endereco: data.endereco || null,
-      observacoes: data.observacoes || null,
-    });
-  };
+  // Função auxiliar para renderizar ícones nos labels
+  const FormIconLabel = ({ icon: Icon, label }: { icon: any, label: string }) => (
+    <div className="flex items-center gap-2 mb-1">
+      <div className="p-1.5 rounded-md bg-primary/10 text-primary">
+        <Icon className="h-3.5 w-3.5" />
+      </div>
+      <span className="font-semibold text-gray-700 dark:text-gray-300">{label}</span>
+    </div>
+  );
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="numero_demanda"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nº Demanda *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: 2024-001" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="numero_sei"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nº SEI</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="xxxx.xxxx/xxxxxxx-x" 
-                    value={field.value ?? ''} 
-                    onChange={(e) => {
-                      const formatted = formatSEI(e.target.value);
-                      field.onChange(formatted);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="postura"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Postura *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+        
+        {/* Seção 1: Identificação (Cards agrupados visualmente) */}
+        <div className="bg-gray-50 dark:bg-muted/30 p-4 rounded-xl space-y-4 border border-border/50">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <Hash className="h-3 w-3" /> Identificação
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="numero_demanda"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nº Demanda</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a postura" />
-                    </SelectTrigger>
+                    <Input placeholder="Ex: 12345/2024" className="bg-white dark:bg-card" {...field} />
                   </FormControl>
-                  <SelectContent>
-                    {POSTURAS.map((postura) => (
-                      <SelectItem key={postura} value={postura}>
-                        {postura}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="sql_numero"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>SQL</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="xxx.xxx.xxxx-x" 
-                    value={field.value ?? ''} 
-                    onChange={(e) => {
-                      const formatted = formatSQL(e.target.value);
-                      field.onChange(formatted);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="data_vistoria"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Data da Vistoria *</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormField
+              control={form.control}
+              name="numero_sei"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nº SEI</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o status" />
-                    </SelectTrigger>
+                    <Input placeholder="0000.0000/0000000-0" className="bg-white dark:bg-card" {...field} />
                   </FormControl>
-                  <SelectContent>
-                    {STATUS_LIST.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <FormField
+              control={form.control}
+              name="sql_numero"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SQL</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <FileDigit className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="000.000.0000-0" className="pl-9 bg-white dark:bg-card" {...field} />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="postura"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Postura</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-white dark:bg-card">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {POSTURAS?.map((postura) => (
+                        <SelectItem key={postura} value={postura}>
+                          {postura}
+                        </SelectItem>
+                      )) || <SelectItem value="Padrao">Padrão</SelectItem>}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
-        <FormField
-          control={form.control}
-          name="endereco"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Endereço</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Endereço completo" 
-                  {...field} 
-                  value={field.value ?? ''} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="observacoes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Observações</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Observações sobre o processo..." 
-                  className="min-h-[100px]"
-                  {...field} 
-                  value={field.value ?? ''} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex justify-end gap-2 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Salvando...' : processo ? 'Atualizar' : 'Criar'}
-          </Button>
-        </div>
-      </form>
-    </Form>
-  );
-}
+        {/* Seção 2: Localização e Status */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="data_vistoria"
+              render={({ field }) => (
+                <FormItem>
+                  <FormIconLabel icon={Calendar} label="Data da Vistoria" />
+                  <FormControl>
+                    <Input type="date" className="h-11" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </Form
