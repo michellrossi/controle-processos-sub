@@ -59,8 +59,8 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {/* Cards de Resumo */}
-        <DashboardCards processos={filteredProcessos} />
+        {/* Cards de Resumo - sempre mostra todos os processos */}
+        <DashboardCards processos={processos} />
 
         {/* Área de Filtros e Busca */}
         <div className="space-y-4">
