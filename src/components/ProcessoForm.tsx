@@ -158,4 +158,89 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                     <Input type="date" className="h-11" {...field} />
                   </FormControl>
                   <FormMessage />
-                </Form
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormIconLabel icon={AlertCircle} label="Status Atual" />
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Selecione o status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {STATUS_LIST.map((status) => (
+                        <SelectItem key={status} value={status} className="flex items-center gap-2">
+                          <span className={`inline-block w-2 h-2 rounded-full mr-2 
+                            ${status === 'Ação necessária' ? 'bg-red-500' : 
+                              status === 'Demanda concluída' ? 'bg-emerald-500' :
+                              'bg-primary'}`} 
+                          />
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="endereco"
+            render={({ field }) => (
+              <FormItem>
+                <FormIconLabel icon={MapPin} label="Endereço Completo" />
+                <FormControl>
+                  <Input placeholder="Rua, Número, Bairro, CEP" className="h-11" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="observacoes"
+            render={({ field }) => (
+              <FormItem>
+                <FormIconLabel icon={FileText} label="Observações e Detalhes" />
+                <FormControl>
+                  <Textarea 
+                    placeholder="Descreva detalhes importantes sobre o processo..." 
+                    className="min-h-[100px] resize-none rounded-xl" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Rodapé de Ações */}
+        <div className="flex justify-end gap-3 pt-4 border-t">
+          <Button type="button" variant="outline" onClick={onCancel} className="gap-2 h-11 px-6 rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-colors">
+            <X className="h-4 w-4" /> Cancelar
+          </Button>
+          <Button type="submit" disabled={isSubmitting} className="gap-2 h-11 px-6 rounded-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20">
+            {isSubmitting ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            {processo ? 'Salvar Alterações' : 'Cadastrar Processo'}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+}
