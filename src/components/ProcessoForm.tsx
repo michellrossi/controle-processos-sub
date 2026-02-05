@@ -41,7 +41,7 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
     defaultValues: processo || {
       numero_demanda: '',
       numero_sei: '',
-      postura: 'Leste',
+      postura: 'ATIVIDADE',
       sql_numero: '',
       data_vistoria: new Date().toISOString().split('T')[0],
       endereco: '',
