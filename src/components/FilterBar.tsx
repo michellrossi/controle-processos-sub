@@ -6,10 +6,9 @@ import { cn } from '@/lib/utils';
 interface FilterBarProps {
   currentFilter: StatusType | 'Todos';
   onFilterChange: (status: StatusType | 'Todos') => void;
-  counts?: Record<string, number>; // Opcional: se quiser mostrar contadores nos botões
+  counts?: Record<string, number>;
 }
 
-// Configuração de cores e ícones (Consistente com DashboardCards)
 const FILTER_CONFIG: Record<StatusType, { icon: React.ReactNode; color: string; activeClass: string; hoverClass: string }> = {
   'Ação necessária': { 
     icon: <AlertCircle className="h-4 w-4" />, 
@@ -58,10 +57,8 @@ const FILTER_CONFIG: Record<StatusType, { icon: React.ReactNode; color: string; 
 export function FilterBar({ currentFilter, onFilterChange }: FilterBarProps) {
   return (
     <div className="w-full py-4">
-      {/* Container flexível e centralizado */}
       <div className="flex flex-wrap justify-center items-center gap-2">
         
-        {/* Botão "Todos" */}
         <Button
           variant={currentFilter === 'Todos' ? 'default' : 'outline'}
           onClick={() => onFilterChange('Todos')}
@@ -78,9 +75,17 @@ export function FilterBar({ currentFilter, onFilterChange }: FilterBarProps) {
 
         <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
 
-        {/* Botões de Status */}
+        {/* --- AQUI ESTAVA O PROBLEMA POTENCIAL --- */}
         {STATUS_LIST.filter(status => status !== 'Demanda devolvida').map((status) => {
           const config = FILTER_CONFIG[status];
+          
+          // 1. Verificação de Segurança (Guard Clause)
+          // Se não houver configuração para este status, não renderiza nada e evita o erro.
+          if (!config) {
+            console.warn(`[FilterBar] Configuração visual ausente para o status: "${status}"`);
+            return null;
+          }
+
           const isActive = currentFilter === status;
 
           return (
@@ -88,6 +93,7 @@ export function FilterBar({ currentFilter, onFilterChange }: FilterBarProps) {
               key={status}
               variant="outline"
               onClick={() => onFilterChange(status)}
+              // 2. Uso seguro do 'config'
               className={cn(
                 "gap-2 transition-all duration-200 rounded-full border",
                 isActive 
