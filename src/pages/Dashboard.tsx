@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Charts } from '@/components/Charts';
 import { Search, Plus, FileText } from 'lucide-react';
 
 export default function Dashboard() {
@@ -91,6 +92,9 @@ export default function Dashboard() {
 
         {/* Cards de Resumo - sempre mostra todos os processos */}
         <DashboardCards processos={processos} />
+
+        {/* Gráficos */}
+        <Charts processos={processos} />
 
         {/* Área de Filtros e Busca */}
         <div className="space-y-4">
