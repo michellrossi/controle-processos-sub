@@ -6,6 +6,7 @@ import { ProcessoTable } from '@/components/ProcessoTable';
 import { FilterBar } from '@/components/FilterBar';
 import { Header } from '@/components/Header';
 import { ProcessoForm } from '@/components/ProcessoForm';
+import { ImportExport } from '@/components/ImportExport';
 import { StatusType, Processo } from '@/types/processo';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
