@@ -6,6 +6,7 @@ import { ProcessoTable } from '@/components/ProcessoTable';
 import { FilterBar } from '@/components/FilterBar';
 import { Header } from '@/components/Header';
 import { ProcessoForm } from '@/components/ProcessoForm';
+import { ImportExport } from '@/components/ImportExport';
 import { StatusType, Processo } from '@/types/processo';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,7 +21,7 @@ import {
 import { Search, Plus, FileText } from 'lucide-react';
 
 export default function Dashboard() {
-  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, isUpdating, isCreating } = useProcessos();
+  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, importProcessos, isUpdating, isCreating } = useProcessos();
   const { user, signOut } = useAuth();
   const [statusFilter, setStatusFilter] = useState<StatusType | 'Todos'>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,15 +72,21 @@ export default function Dashboard() {
             </p>
           </div>
           
-          {/* Botão Criar Novo Processo */}
-          <Button 
-            onClick={() => setIsCreateDialogOpen(true)}
-            size="lg"
-            className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
-          >
-            <Plus className="h-5 w-5" />
-            Novo Processo
-          </Button>
+          {/* Ações do cabeçalho */}
+          <div className="flex flex-wrap items-center gap-3">
+            <ImportExport
+              processos={processos}
+              onImport={importProcessos}
+            />
+            <Button 
+              onClick={() => setIsCreateDialogOpen(true)}
+              size="lg"
+              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
+            >
+              <Plus className="h-5 w-5" />
+              Novo Processo
+            </Button>
+          </div>
         </div>
 
         {/* Cards de Resumo - sempre mostra todos os processos */}
