@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { Charts } from '@/components/Charts';
 import { Search, Plus, FileText } from 'lucide-react';
 
 export default function Dashboard() {
