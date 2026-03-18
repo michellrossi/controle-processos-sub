@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useCallback } from 'react';
 import { Processo, STATUS_LIST, POSTURAS, StatusType } from '@/types/processo';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,6 +35,26 @@ interface ProcessoFormProps {
   onSubmit: (data: Partial<Processo>) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
+}
+
+// Máscara SEI: xxxx.xxxx/xxxxxxx-x
+function maskSEI(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 13);
+  let result = digits;
+  if (digits.length > 4) result = digits.slice(0, 4) + '.' + digits.slice(4);
+  if (digits.length > 8) result = result.slice(0, 9) + '/' + result.slice(9);
+  if (digits.length > 15) result = result.slice(0, 17) + '-' + result.slice(17);
+  return result;
+}
+
+// Máscara SQL: xxx.xxx.xxxx-x
+function maskSQL(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  let result = digits;
+  if (digits.length > 3) result = digits.slice(0, 3) + '.' + digits.slice(3);
+  if (digits.length > 6) result = result.slice(0, 7) + '.' + result.slice(7);
+  if (digits.length > 10) result = result.slice(0, 11) + '-' + result.slice(11);
+  return result;
 }
 
 export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: ProcessoFormProps) {
@@ -92,7 +113,12 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                 <FormItem>
                   <FormLabel>Nº SEI</FormLabel>
                   <FormControl>
-                    <Input placeholder="0000.0000/0000000-0" className="bg-white dark:bg-card" {...field} />
+                    <Input
+                      placeholder="0000.0000/0000000-0"
+                      className="bg-white dark:bg-card"
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(maskSEI(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -110,7 +136,12 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                   <FormControl>
                     <div className="relative">
                       <FileDigit className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="000.000.0000-0" className="pl-9 bg-white dark:bg-card" {...field} />
+                      <Input
+                        placeholder="000.000.0000-0"
+                        className="pl-9 bg-white dark:bg-card"
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(maskSQL(e.target.value))}
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
