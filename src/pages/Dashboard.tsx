@@ -21,7 +21,7 @@ import {
 import { Search, Plus, FileText } from 'lucide-react';
 
 export default function Dashboard() {
-  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, isUpdating, isCreating } = useProcessos();
+  const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, importProcessos, isUpdating, isCreating } = useProcessos();
   const { user, signOut } = useAuth();
   const [statusFilter, setStatusFilter] = useState<StatusType | 'Todos'>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
