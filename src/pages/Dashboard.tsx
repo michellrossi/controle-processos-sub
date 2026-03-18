@@ -93,6 +93,9 @@ export default function Dashboard() {
         {/* Cards de Resumo - sempre mostra todos os processos */}
         <DashboardCards processos={processos} />
 
+        {/* Gráficos */}
+        <Charts processos={processos} />
+
         {/* Área de Filtros e Busca */}
         <div className="space-y-4">
           <Card className="border-none shadow-sm bg-white/50 backdrop-blur-sm">
