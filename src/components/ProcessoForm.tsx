@@ -142,6 +142,7 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                         value={field.value ?? ''}
                         onChange={(e) => field.onChange(maskSQL(e.target.value))}
                       />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
