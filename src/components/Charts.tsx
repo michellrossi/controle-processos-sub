@@ -1,4 +1,4 @@
-import { Processo, STATUS_LIST, POSTURAS, StatusType, PosturaType } from '@/types/processo';
+import { Processo, STATUS_LIST, POSTURAS, StatusType } from '@/types/processo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BarChart,
@@ -8,39 +8,48 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
   Cell,
-  Legend,
 } from 'recharts';
 
 interface ChartsProps {
   processos: Processo[];
 }
 
-const STATUS_CHART_COLORS: Record<StatusType, string> = {
-  'Ação necessária': '#e74c3c',
-  'Demanda concluída': '#27ae60',
-  'Demanda devolvida': '#9b59b6',
-  'Demanda agrupada': '#4a90d9',
-  'Auto emitido': '#f39c12',
-  'A.R. devolvido': '#e91e63',
-  'A.R. entregue': '#26a69a',
+const STATUS_COLORS: Record<StatusType, string> = {
+  'Ação necessária': 'hsl(0 84% 60%)',
+  'Demanda concluída': 'hsl(142 76% 36%)',
+  'Demanda devolvida': 'hsl(271 81% 56%)',
+  'Demanda agrupada': 'hsl(217 91% 60%)',
+  'Auto emitido': 'hsl(25 95% 53%)',
+  'A.R. devolvido': 'hsl(340 82% 52%)',
+  'A.R. entregue': 'hsl(168 76% 42%)',
+};
+
+const POSTURA_COLOR = 'hsl(217 91% 45%)';
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg text-sm">
+        <p className="font-semibold text-foreground">{label}</p>
+        <p className="text-muted-foreground">{payload[0].value} processos</p>
+      </div>
+    );
+  }
+  return null;
 };
 
 export function Charts({ processos }: ChartsProps) {
-  // Data for status pie chart
   const statusData = STATUS_LIST.map((status) => ({
     name: status,
     value: processos.filter((p) => p.status === status).length,
-    color: STATUS_CHART_COLORS[status],
-  })).filter((d) => d.value > 0);
+    color: STATUS_COLORS[status],
+  })).sort((a, b) => b.value - a.value);
 
-  // Data for postura bar chart - show ALL posturas
-  const allPosturaData = POSTURAS.map((postura) => ({
+  const posturaData = POSTURAS.map((postura) => ({
     name: postura,
-    quantidade: processos.filter((p) => p.postura === postura).length,
-  }));
+    value: processos.filter((p) => p.postura === postura).length,
+  })).sort((a, b) => b.value - a.value);
 
   if (processos.length === 0) {
     return (
@@ -52,60 +61,80 @@ export function Charts({ processos }: ChartsProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Status Pie Chart */}
-      <Card className="card-hover">
-        <CardHeader>
-          <CardTitle className="text-lg">Processos por Status</CardTitle>
+      {/* Status Bar Chart */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold">Processos por Status</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={statusData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                >
+              <BarChart
+                data={statusData}
+                layout="vertical"
+                margin={{ top: 4, right: 24, left: 4, bottom: 4 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
+                <XAxis
+                  type="number"
+                  allowDecimals={false}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  width={130}
+                  interval={0}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.5)' }} />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={22}>
                   {statusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
 
       {/* Postura Bar Chart */}
-      <Card className="card-hover">
-        <CardHeader>
-          <CardTitle className="text-lg">Processos por Postura</CardTitle>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold">Processos por Postura</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[500px]">
+          <div className="h-[420px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={allPosturaData}
+                data={posturaData}
                 layout="vertical"
-                margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
+                margin={{ top: 4, right: 24, left: 4, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" allowDecimals={false} />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  tick={{ fontSize: 11 }}
-                  width={110}
-                  interval={0}
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
+                <XAxis
+                  type="number"
+                  allowDecimals={false}
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  axisLine={false}
+                  tickLine={false}
                 />
-                <Tooltip />
-                <Bar dataKey="quantidade" fill="hsl(217 91% 45%)" radius={[0, 4, 4, 0]} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                  width={130}
+                  interval={0}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.5)' }} />
+                <Bar dataKey="value" fill={POSTURA_COLOR} radius={[0, 6, 6, 0]} maxBarSize={22} />
               </BarChart>
             </ResponsiveContainer>
           </div>
