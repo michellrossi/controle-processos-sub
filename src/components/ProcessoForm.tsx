@@ -113,7 +113,12 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                 <FormItem>
                   <FormLabel>Nº SEI</FormLabel>
                   <FormControl>
-                    <Input placeholder="0000.0000/0000000-0" className="bg-white dark:bg-card" {...field} />
+                    <Input
+                      placeholder="0000.0000/0000000-0"
+                      className="bg-white dark:bg-card"
+                      value={field.value ?? ''}
+                      onChange={(e) => field.onChange(maskSEI(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,8 +136,12 @@ export function ProcessoForm({ processo, onSubmit, onCancel, isSubmitting }: Pro
                   <FormControl>
                     <div className="relative">
                       <FileDigit className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="000.000.0000-0" className="pl-9 bg-white dark:bg-card" {...field} />
-                    </div>
+                      <Input
+                        placeholder="000.000.0000-0"
+                        className="pl-9 bg-white dark:bg-card"
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(maskSQL(e.target.value))}
+                      />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
