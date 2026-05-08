@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Upload, Download } from 'lucide-react';
+import { Upload, Download, FileSpreadsheet } from 'lucide-react';
 import { validateAndParseCSV, ValidationResult, ParsedRow } from '@/utils/csvParser';
 import { ImportPreview } from '@/components/ImportPreview';
 
@@ -19,27 +19,56 @@ interface ImportExportProps {
   isImporting?: boolean;
 }
 
+const CSV_HEADERS = [
+  'Nº Demanda',
+  'Nº SEI',
+  'Postura',
+  'SQL',
+  'Data Vistoria',
+  'Endereço',
+  'Status',
+  'Observações',
+];
+
 export function ImportExport({ processos, onImport, isImporting }: ImportExportProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
+
+  const handleDownloadTemplate = () => {
+    const exampleRow = [
+      '2024-001',
+      '6010.2024/0000001-0',
+      'Muro',
+      '001.002.0003-4',
+      '2024-05-20',
+      'Rua Exemplo, 123',
+      'Ação necessária',
+      'Observação de exemplo aqui',
+    ];
+
+    const csvContent = [
+      CSV_HEADERS.join(','),
+      exampleRow.map(cell => `"${cell}"`).join(','),
+    ].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `modelo_importacao_processos.csv`;
+    link.click();
+
+    toast({ 
+      title: 'Modelo Baixado', 
+      description: 'Use este arquivo como base para suas importações.',
+    });
+  };
 
   const handleExport = () => {
     if (processos.length === 0) {
       toast({ title: 'Aviso', description: 'Não há processos para exportar.', variant: 'destructive' });
       return;
     }
-
-    const headers = [
-      'Nº Demanda',
-      'Nº SEI',
-      'Postura',
-      'SQL',
-      'Data Vistoria',
-      'Endereço',
-      'Status',
-      'Observações',
-    ];
 
     const rows = processos.map((p) => [
       p.numero_demanda,
@@ -53,7 +82,7 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
     ]);
 
     const csvContent = [
-      headers.join(','),
+      CSV_HEADERS.join(','),
       ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
     ].join('\n');
 
@@ -66,10 +95,8 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
     toast({ title: 'Sucesso', description: `${processos.length} processos exportados.` });
   };
 
-  // Detecta se o texto tem caracteres inválidos (encoding incorreto)
   const hasInvalidChars = (text: string): boolean => {
-    // Caractere de substituição Unicode (aparece quando encoding falha)
-    return text.includes('\uFFFD') || /�/.test(text);
+    return text.includes('\uFFFD') || //.test(text);
   };
 
   const processFile = (text: string) => {
@@ -86,12 +113,10 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Primeiro tenta UTF-8
     const readerUtf8 = new FileReader();
     readerUtf8.onload = (e) => {
       const text = e.target?.result as string;
       
-      // Se UTF-8 tem caracteres inválidos, tenta Latin1 (windows-1252)
       if (hasInvalidChars(text)) {
         const readerLatin = new FileReader();
         readerLatin.onload = (e2) => {
@@ -125,7 +150,7 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <input
           ref={fileInputRef}
           type="file"
@@ -135,25 +160,40 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
         />
         <Button
           variant="outline"
+          size="sm"
+          onClick={handleDownloadTemplate}
+          className="gap-2 border-dashed"
+        >
+          <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+          Modelo CSV
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={() => fileInputRef.current?.click()}
           disabled={isImporting}
           className="gap-2"
         >
           <Upload className="h-4 w-4" />
-          Importar CSV
+          Importar
         </Button>
-        <Button variant="outline" onClick={handleExport} className="gap-2">
+        <Button 
+          variant="secondary" 
+          size="sm"
+          onClick={handleExport} 
+          className="gap-2"
+        >
           <Download className="h-4 w-4" />
-          Exportar CSV
+          Exportar
         </Button>
       </div>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Preview da Importação</DialogTitle>
             <DialogDescription>
-              Revise os dados antes de confirmar a importação.
+              Revise os dados abaixo. Linhas com erros serão ignoradas.
             </DialogDescription>
           </DialogHeader>
           {validation && (
@@ -169,3 +209,4 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
     </>
   );
 }
+

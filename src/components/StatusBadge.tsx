@@ -8,25 +8,25 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, size = 'md', className }: StatusBadgeProps) {
-  const colors = STATUS_COLORS[status];
+  const config = STATUS_COLORS[status];
   
   const sizeClasses = {
-    sm: 'px-2 py-0.5 text-xs',
-    md: 'px-2.5 py-1 text-xs',
-    lg: 'px-3 py-1.5 text-sm',
+    sm: 'px-2 py-0.5 text-[10px]',
+    md: 'px-2.5 py-0.5 text-[11px]',
+    lg: 'px-3 py-1 text-xs',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center font-medium rounded-full',
-        colors.bg,
-        colors.text,
+        'status-badge inline-flex items-center',
+        config.badge,
         sizeClasses[size],
         className
       )}
     >
-      {colors.label}
+      {config.label}
     </span>
   );
 }
+

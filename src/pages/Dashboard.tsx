@@ -19,7 +19,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Charts } from '@/components/Charts';
-import { Search, Plus, FileText } from 'lucide-react';
+import { Search, Plus, FileText, LayoutDashboard } from 'lucide-react';
 
 export default function Dashboard() {
   const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, importProcessos, isUpdating, isCreating } = useProcessos();
@@ -52,28 +52,38 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950">
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <LayoutDashboard className="w-5 h-5 text-primary animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-background space-y-8 pb-10">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#020617] transition-colors duration-500">
       <Header userEmail={user?.email} onSignOut={signOut} />
       
-      <main className="container mx-auto px-4 pt-4 space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+      <main className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-in">
+        
+        {/* Top Section: Title & Actions */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-primary font-semibold text-sm uppercase tracking-wider">
+              <div className="h-1 w-8 bg-primary rounded-full" />
+              Visão Geral
+            </div>
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Painel de Controle
             </h1>
-            <p className="text-muted-foreground">
-              Gerencie e acompanhe todos os processos e demandas.
+            <p className="text-slate-500 dark:text-slate-400 max-w-md text-balance">
+              Monitore o progresso dos processos e gerencie demandas com eficiência.
             </p>
           </div>
           
-          {/* Ações do cabeçalho */}
           <div className="flex flex-wrap items-center gap-3">
             <ImportExport
               processos={processos}
@@ -81,80 +91,83 @@ export default function Dashboard() {
             />
             <Button 
               onClick={() => setIsCreateDialogOpen(true)}
-              size="lg"
-              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
+              className="btn-gradient px-6 h-11 rounded-xl"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="mr-2 h-5 w-5" />
               Novo Processo
             </Button>
           </div>
         </div>
 
-        {/* Cards de Resumo - sempre mostra todos os processos */}
-        <DashboardCards processos={processos} />
+        {/* Resumo e Gráficos */}
+        <div className="space-y-8">
+          <DashboardCards processos={processos} />
+          <Charts processos={processos} />
+        </div>
 
-        {/* Gráficos */}
-        <Charts processos={processos} />
-
-        {/* Área de Filtros e Busca */}
-        <div className="space-y-4">
-          <Card className="border-none shadow-sm bg-white/50 backdrop-blur-sm">
-            <CardContent className="p-4 space-y-4">
-              
-              {/* Barra de Busca */}
-              <div className="relative max-w-md mx-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        {/* List Section */}
+        <div className="space-y-6 pt-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
+              Processos Ativos
+            </h2>
+            
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+              <div className="relative group w-full sm:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
                 <Input
-                  placeholder="Buscar por demanda, SEI, SQL ou endereço..."
+                  placeholder="Buscar processos..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 bg-white dark:bg-card border-gray-200"
+                  className="pl-10 h-10 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl focus:ring-primary/20 transition-all"
                 />
               </div>
-
-              {/* Barra de Filtros */}
               <FilterBar 
                 currentFilter={statusFilter} 
                 onFilterChange={setStatusFilter} 
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Tabela de Resultados */}
-          <ProcessoTable 
-            processos={filteredProcessos}
-            onUpdate={updateProcesso}
-            onDelete={deleteProcesso}
-            onDeleteMany={deleteMany}
-            isUpdating={isUpdating}
-          />
+          <div className="premium-card rounded-2xl overflow-hidden bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-slate-200/60 dark:border-slate-800/60">
+            <ProcessoTable 
+              processos={filteredProcessos}
+              onUpdate={updateProcesso}
+              onDelete={deleteProcesso}
+              onDeleteMany={deleteMany}
+              isUpdating={isUpdating}
+            />
+          </div>
         </div>
       </main>
 
-      {/* Modal de Criação de Processo */}
+      {/* Modal de Criação */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="space-y-3 pb-4 border-b">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 text-primary">
-                <FileText className="h-6 w-6" />
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border-none shadow-2xl p-0">
+          <div className="p-8">
+            <DialogHeader className="mb-8">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                  <FileText className="h-7 w-7" />
+                </div>
+                <div>
+                  <DialogTitle className="text-2xl font-bold">Cadastrar Processo</DialogTitle>
+                  <DialogDescription className="text-slate-500 mt-1">
+                    Preencha os campos abaixo para adicionar à base de dados.
+                  </DialogDescription>
+                </div>
               </div>
-              <div>
-                <DialogTitle className="text-xl font-bold">Novo Processo</DialogTitle>
-                <DialogDescription className="text-muted-foreground">
-                  Preencha os dados para cadastrar um novo processo no sistema.
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          
-          <ProcessoForm 
-            onSubmit={handleCreateProcesso}
-            onCancel={() => setIsCreateDialogOpen(false)}
-            isSubmitting={isCreating}
-          />
+            </DialogHeader>
+            
+            <ProcessoForm 
+              onSubmit={handleCreateProcesso}
+              onCancel={() => setIsCreateDialogOpen(false)}
+              isSubmitting={isCreating}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+

@@ -71,12 +71,13 @@ export const STATUS_LIST: StatusType[] = [
   'A.R. entregue',
 ];
 
-export const STATUS_COLORS: Record<StatusType, { bg: string; text: string; label: string }> = {
-  'Ação necessária': { bg: 'bg-status-acao', text: 'text-white', label: 'Ação necessária' },
-  'Demanda concluída': { bg: 'bg-status-concluida', text: 'text-white', label: 'Demanda concluída' },
-  'Demanda devolvida': { bg: 'bg-status-devolvida', text: 'text-white', label: 'Demanda devolvida' },
-  'Demanda agrupada': { bg: 'bg-status-agrupada', text: 'text-white', label: 'Demanda agrupada' },
-  'Auto emitido': { bg: 'bg-status-auto', text: 'text-white', label: 'Auto emitido' },
-  'A.R. devolvido': { bg: 'bg-status-ar-devolvido', text: 'text-white', label: 'A.R. devolvido' },
-  'A.R. entregue': { bg: 'bg-status-ar-entregue', text: 'text-white', label: 'A.R. entregue' },
+export const STATUS_COLORS: Record<StatusType, { badge: string; label: string }> = {
+  'Ação necessária': { badge: 'badge-acao', label: 'Ação necessária' },
+  'Demanda concluída': { badge: 'badge-concluida', label: 'Demanda concluída' },
+  'Demanda devolvida': { badge: 'badge-devolvida', label: 'Demanda devolvida' },
+  'Demanda agrupada': { badge: 'badge-agrupada', label: 'Demanda agrupada' },
+  'Auto emitido': { badge: 'badge-auto', label: 'Auto emitido' },
+  'A.R. devolvido': { badge: 'badge-ar-devolvido', label: 'A.R. devolvido' },
+  'A.R. entregue': { badge: 'badge-ar-entregue', label: 'A.R. entregue' },
 };
+
