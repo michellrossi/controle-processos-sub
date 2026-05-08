@@ -96,8 +96,9 @@ export function ImportExport({ processos, onImport, isImporting }: ImportExportP
   };
 
   const hasInvalidChars = (text: string): boolean => {
-    return text.includes('\uFFFD') || //.test(text);
+    return text.includes('\uFFFD');
   };
+
 
   const processFile = (text: string) => {
     try {
