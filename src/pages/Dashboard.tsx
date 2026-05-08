@@ -72,7 +72,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#020617] transition-colors duration-500">
       <Header userEmail={user?.email} onSignOut={signOut} />
       
-      <main className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-in">
+      <main className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 fade-slide-in">
         
         {/* Top Section: Title & Actions */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">

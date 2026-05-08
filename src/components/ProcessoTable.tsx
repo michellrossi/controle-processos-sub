@@ -130,8 +130,9 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
     <>
       {/* Barra de ações em lote */}
       {selectedIds.size > 0 && onDeleteMany && (
-        <div className="flex items-center justify-between gap-4 p-4 mb-6 bg-primary/5 dark:bg-primary/10 rounded-2xl border border-primary/20 animate-in">
+        <div className="flex items-center justify-between gap-4 p-4 mb-6 bg-primary/5 dark:bg-primary/10 rounded-2xl border border-primary/20 fade-slide-in">
           <div className="flex items-center gap-3">
+
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
               {selectedIds.size}
             </div>

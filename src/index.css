@@ -153,11 +153,11 @@
     text-wrap: balance;
   }
   
-  .animate-in {
-    animation: animateIn 0.5s ease-out forwards;
+  .fade-slide-in {
+    animation: fadeSlideIn 0.5s ease-out forwards;
   }
 
-  @keyframes animateIn {
+  @keyframes fadeSlideIn {
     from {
       opacity: 0;
       transform: translateY(10px);
@@ -168,4 +168,5 @@
     }
   }
 }
+
 

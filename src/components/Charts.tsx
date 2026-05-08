@@ -25,12 +25,20 @@ const STATUS_COLORS: Record<StatusType, string> = {
   'Auto emitido': '#f59e0b',
   'A.R. devolvido': '#ec4899',
   'A.R. entregue': '#14b8a6',
-};
+};const POSTURA_COLORS = [
+  '#3b82f6', // Blue
+  '#10b981', // Emerald
+  '#f59e0b', // Amber
+  '#8b5cf6', // Violet
+  '#ec4899', // Pink
+  '#06b6d4', // Cyan
+  '#f43f5e', // Rose
+];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="glass-panel px-4 py-2 rounded-xl shadow-2xl border-white/20 text-sm animate-in">
+      <div className="glass-panel px-4 py-2 rounded-xl shadow-2xl border-white/20 text-sm fade-slide-in">
         <p className="font-bold text-foreground mb-1">{label || payload[0].name}</p>
         <div className="flex items-center gap-2">
           <div 
@@ -148,16 +156,15 @@ export function Charts({ processos }: ChartsProps) {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={85}
-
                   paddingAngle={8}
                   dataKey="value"
                   animationBegin={0}
                   animationDuration={1500}
                 >
-                  {posturaData.map((entry, index) => (
+                  {posturaData.map((_entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={`hsl(var(--primary), ${1 - (index * 0.15)})`} 
+                      fill={POSTURA_COLORS[index % POSTURA_COLORS.length]} 
                       className="stroke-background hover:opacity-80 transition-opacity"
                       strokeWidth={4}
                     />
@@ -169,7 +176,7 @@ export function Charts({ processos }: ChartsProps) {
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-4">
               {posturaData.slice(0, 4).map((entry, index) => (
                 <div key={index} className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: `hsl(var(--primary), ${1 - (index * 0.15)})` }} />
+                  <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: POSTURA_COLORS[index % POSTURA_COLORS.length] }} />
                   <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[100px]">{entry.name}</span>
                 </div>
               ))}
@@ -178,6 +185,9 @@ export function Charts({ processos }: ChartsProps) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
   );
 }
 

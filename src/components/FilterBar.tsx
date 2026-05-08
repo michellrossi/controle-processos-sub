@@ -31,8 +31,9 @@ export function FilterBar({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3 animate-in">
+    <div className="flex flex-wrap items-center gap-3 fade-slide-in">
       {/* Filtro de Status */}
+
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline">Status:</span>
         <Select value={currentStatus} onValueChange={(val) => onStatusChange(val as any)}>
