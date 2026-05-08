@@ -25,6 +25,7 @@ export default function Dashboard() {
   const { processos, isLoading, updateProcesso, deleteProcesso, deleteMany, createProcesso, importProcessos, isUpdating, isCreating } = useProcessos();
   const { user, signOut } = useAuth();
   const [statusFilter, setStatusFilter] = useState<StatusType | 'Todos'>('Todos');
+  const [posturaFilter, setPosturaFilter] = useState<PosturaType | 'Todas'>('Todas');
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
@@ -33,6 +34,10 @@ export default function Dashboard() {
       const matchesStatus = statusFilter === 'Todos' 
         ? true 
         : processo.status === statusFilter;
+      
+      const matchesPostura = posturaFilter === 'Todas'
+        ? true
+        : processo.postura === posturaFilter;
 
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
@@ -41,9 +46,9 @@ export default function Dashboard() {
         processo.endereco?.toLowerCase().includes(searchLower) ||
         processo.sql_numero?.toLowerCase().includes(searchLower);
 
-      return matchesStatus && matchesSearch;
+      return matchesStatus && matchesPostura && matchesSearch;
     });
-  }, [processos, statusFilter, searchTerm]);
+  }, [processos, statusFilter, posturaFilter, searchTerm]);
 
   const handleCreateProcesso = (data: Partial<Processo>) => {
     createProcesso(data as Omit<Processo, 'id' | 'user_id' | 'created_at' | 'updated_at'>);
@@ -107,29 +112,37 @@ export default function Dashboard() {
 
         {/* List Section */}
         <div className="space-y-6 pt-4">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
-              Processos Ativos
-            </h2>
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
+                Processos Ativos
+              </h2>
+            </div>
             
-            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-              <div className="relative group w-full sm:w-80">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
-                <Input
-                  placeholder="Buscar processos..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-10 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl focus:ring-primary/20 transition-all"
-                />
-              </div>
+            {/* Filtros em uma linha */}
+            <div className="glass-panel p-4 rounded-2xl">
               <FilterBar 
-                currentFilter={statusFilter} 
-                onFilterChange={setStatusFilter} 
+                currentStatus={statusFilter} 
+                onStatusChange={setStatusFilter}
+                currentPostura={posturaFilter}
+                onPosturaChange={setPosturaFilter}
+              />
+            </div>
+
+            {/* Busca em outra linha */}
+            <div className="relative group w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+              <Input
+                placeholder="Buscar processos por demanda, SEI, endereço ou SQL..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 h-12 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm focus:ring-primary/20 transition-all text-base"
               />
             </div>
           </div>
 
           <div className="premium-card rounded-2xl overflow-hidden bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-slate-200/60 dark:border-slate-800/60">
+
             <ProcessoTable 
               processos={filteredProcessos}
               onUpdate={updateProcesso}

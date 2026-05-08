@@ -108,7 +108,7 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
 
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), 'dd MMM yyyy', { locale: ptBR });
+      return format(new Date(dateString), 'dd/MM/yyyy', { locale: ptBR });
     } catch {
       return dateString;
     }
@@ -166,52 +166,52 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
           <TableHeader>
             <TableRow className="border-b border-slate-200 dark:border-slate-800 hover:bg-transparent">
               {onDeleteMany && (
-                <TableHead className="w-12">
+                <TableHead className="w-12 text-center">
                   <Checkbox
                     checked={isAllSelected}
                     onCheckedChange={handleSelectAll}
                     aria-label="Selecionar todos"
-                    className="border-slate-300 dark:border-slate-700 data-[state=checked]:bg-primary"
+                    className="border-slate-300 dark:border-slate-700 data-[state=checked]:bg-primary mx-auto"
                   />
                 </TableHead>
               )}
-              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5">Nº Demanda</TableHead>
-              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5">Nº SEI</TableHead>
-              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5">Postura</TableHead>
-              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5">Data</TableHead>
-              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5">Endereço</TableHead>
+              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Nº Demanda</TableHead>
+              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Nº SEI</TableHead>
+              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Postura</TableHead>
+              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Data</TableHead>
+              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Endereço</TableHead>
               <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Status</TableHead>
-              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-right">Ações</TableHead>
+              <TableHead className="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-widest py-5 text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {processos.map((processo) => (
               <TableRow key={processo.id} className="border-b border-slate-100/50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors group">
                 {onDeleteMany && (
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Checkbox
                       checked={selectedIds.has(processo.id)}
                       onCheckedChange={(checked) => handleSelectOne(processo.id, !!checked)}
                       aria-label={`Selecionar processo ${processo.numero_demanda}`}
-                      className="border-slate-300 dark:border-slate-700 data-[state=checked]:bg-primary"
+                      className="border-slate-300 dark:border-slate-700 data-[state=checked]:bg-primary mx-auto"
                     />
                   </TableCell>
                 )}
-                <TableCell className="py-4">
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{processo.numero_demanda}</span>
+                <TableCell className="py-4 text-center">
+                  <span className="text-slate-900 dark:text-slate-100">{processo.numero_demanda}</span>
                 </TableCell>
-                <TableCell className="py-4">
+                <TableCell className="py-4 text-center">
                   <span className="text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
                     {processo.numero_sei || '-'}
                   </span>
                 </TableCell>
-                <TableCell className="py-4">
-                  <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">{processo.postura}</span>
+                <TableCell className="py-4 text-center text-sm text-slate-600 dark:text-slate-400">
+                  {processo.postura}
                 </TableCell>
-                <TableCell className="py-4">
-                  <span className="text-sm text-slate-500 dark:text-slate-500">{formatDate(processo.data_vistoria)}</span>
+                <TableCell className="py-4 text-center text-sm text-slate-500 dark:text-slate-500">
+                  {formatDate(processo.data_vistoria)}
                 </TableCell>
-                <TableCell className="py-4 max-w-[200px]">
+                <TableCell className="py-4 text-center max-w-[200px]">
                   <p className="text-sm text-slate-600 dark:text-slate-400 truncate" title={processo.endereco || ''}>
                     {processo.endereco || '-'}
                   </p>
@@ -219,21 +219,23 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                 <TableCell className="py-4 text-center">
                   <StatusBadge status={processo.status} />
                 </TableCell>
-                <TableCell className="py-4 text-right">
-                  <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <TableCell className="py-4 text-center">
+                  <div className="flex justify-center gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10"
+                      className="h-8 w-8 rounded-lg text-blue-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                       onClick={() => handleOpenObservacoes(processo)}
+                      title="Visualizar"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10"
+                      className="h-8 w-8 rounded-lg text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                       onClick={() => handleOpenEdit(processo)}
+                      title="Editar"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -241,7 +243,8 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
                       variant="ghost"
                       size="icon"
                       onClick={() => handleOpenDelete(processo)}
-                      className="h-8 w-8 rounded-lg text-slate-400 hover:text-destructive hover:bg-destructive/10"
+                      className="h-8 w-8 rounded-lg text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+                      title="Excluir"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -252,6 +255,7 @@ export function ProcessoTable({ processos, onUpdate, onDelete, onDeleteMany, isU
           </TableBody>
         </Table>
       </div>
+
 
       <Dialog open={showObservacoes} onOpenChange={setShowObservacoes}>
         <DialogContent className="sm:max-w-md rounded-2xl">

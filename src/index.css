@@ -98,12 +98,17 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-bold;
+    @apply tracking-tight font-semibold;
   }
 }
 
 @layer components {
+  .gradient-header {
+    @apply bg-slate-900 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900;
+  }
+
   .glass-panel {
+
     @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-800/20 shadow-xl;
   }
 

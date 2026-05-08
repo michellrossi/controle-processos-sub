@@ -139,15 +139,16 @@ export function Charts({ processos }: ChartsProps) {
           </div>
         </CardHeader>
         <CardContent className="pt-8">
-          <div className="h-[320px]">
+          <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={posturaData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={80}
-                  outerRadius={110}
+                  innerRadius={60}
+                  outerRadius={85}
+
                   paddingAngle={8}
                   dataKey="value"
                   animationBegin={0}

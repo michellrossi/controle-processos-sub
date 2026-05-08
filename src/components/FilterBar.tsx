@@ -1,114 +1,81 @@
 import { Button } from '@/components/ui/button';
-import { STATUS_LIST, StatusType } from '@/types/processo';
-import { CheckCircle, AlertCircle, Archive, Send, Mail, Layers, Filter } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { STATUS_LIST, POSTURAS, StatusType, PosturaType } from '@/types/processo';
+import { Filter, X } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface FilterBarProps {
-  currentFilter: StatusType | 'Todos';
-  onFilterChange: (status: StatusType | 'Todos') => void;
-  counts?: Record<string, number>;
+  currentStatus: StatusType | 'Todos';
+  onStatusChange: (status: StatusType | 'Todos') => void;
+  currentPostura: PosturaType | 'Todas';
+  onPosturaChange: (postura: PosturaType | 'Todas') => void;
 }
 
-const FILTER_CONFIG: Record<StatusType, { icon: React.ReactNode; color: string; activeClass: string; hoverClass: string }> = {
-  'Ação necessária': { 
-    icon: <AlertCircle className="h-4 w-4" />, 
-    color: 'text-red-600',
-    activeClass: 'bg-red-500 text-white hover:bg-red-600 border-red-500',
-    hoverClass: 'hover:bg-red-50 text-red-600 border-red-200'
-  },
-  'Demanda concluída': { 
-    icon: <CheckCircle className="h-4 w-4" />, 
-    color: 'text-emerald-600',
-    activeClass: 'bg-emerald-500 text-white hover:bg-emerald-600 border-emerald-500',
-    hoverClass: 'hover:bg-emerald-50 text-emerald-600 border-emerald-200'
-  },
-  'Demanda devolvida': { 
-    icon: <Archive className="h-4 w-4" />, 
-    color: 'text-purple-600',
-    activeClass: 'bg-purple-500 text-white hover:bg-purple-600 border-purple-500',
-    hoverClass: 'hover:bg-purple-50 text-purple-600 border-purple-200'
-  },
-  'Demanda agrupada': { 
-    icon: <Layers className="h-4 w-4" />, 
-    color: 'text-blue-600',
-    activeClass: 'bg-blue-500 text-white hover:bg-blue-600 border-blue-500',
-    hoverClass: 'hover:bg-blue-50 text-blue-600 border-blue-200'
-  },
-  'Auto emitido': { 
-    icon: <Send className="h-4 w-4" />, 
-    color: 'text-orange-600',
-    activeClass: 'bg-orange-500 text-white hover:bg-orange-600 border-orange-500',
-    hoverClass: 'hover:bg-orange-50 text-orange-600 border-orange-200'
-  },
-  'A.R. devolvido': { 
-    icon: <Mail className="h-4 w-4" />, 
-    color: 'text-rose-600',
-    activeClass: 'bg-rose-500 text-white hover:bg-rose-600 border-rose-500',
-    hoverClass: 'hover:bg-rose-50 text-rose-600 border-rose-200'
-  },
-  'A.R. entregue': { 
-    icon: <Mail className="h-4 w-4" />, 
-    color: 'text-teal-600',
-    activeClass: 'bg-teal-500 text-white hover:bg-teal-600 border-teal-500',
-    hoverClass: 'hover:bg-teal-50 text-teal-600 border-teal-200'
-  },
-};
+export function FilterBar({ 
+  currentStatus, 
+  onStatusChange, 
+  currentPostura, 
+  onPosturaChange 
+}: FilterBarProps) {
+  
+  const hasActiveFilters = currentStatus !== 'Todos' || currentPostura !== 'Todas';
 
-export function FilterBar({ currentFilter, onFilterChange }: FilterBarProps) {
+  const clearFilters = () => {
+    onStatusChange('Todos');
+    onPosturaChange('Todas');
+  };
+
   return (
-    <div className="w-full py-4">
-      <div className="flex flex-wrap justify-center items-center gap-2">
-        
-        <Button
-          variant={currentFilter === 'Todos' ? 'default' : 'outline'}
-          onClick={() => onFilterChange('Todos')}
-          className={cn(
-            "gap-2 transition-all duration-200 rounded-full",
-            currentFilter === 'Todos' 
-              ? "bg-primary text-primary-foreground shadow-md scale-105" 
-              : "text-muted-foreground hover:text-foreground hover:bg-accent"
-          )}
-        >
-          <Filter className="h-4 w-4" />
-          Todos
-        </Button>
-
-        <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
-
-        {/* --- AQUI ESTAVA O PROBLEMA POTENCIAL --- */}
-        {STATUS_LIST.filter(status => status !== 'Demanda devolvida').map((status) => {
-          const config = FILTER_CONFIG[status];
-          
-          // 1. Verificação de Segurança (Guard Clause)
-          // Se não houver configuração para este status, não renderiza nada e evita o erro.
-          if (!config) {
-            console.warn(`[FilterBar] Configuração visual ausente para o status: "${status}"`);
-            return null;
-          }
-
-          const isActive = currentFilter === status;
-
-          return (
-            <Button
-              key={status}
-              variant="outline"
-              onClick={() => onFilterChange(status)}
-              // 2. Uso seguro do 'config'
-              className={cn(
-                "gap-2 transition-all duration-200 rounded-full border",
-                isActive 
-                  ? cn(config.activeClass, "shadow-md scale-105 border-transparent") 
-                  : cn(config.hoverClass, "bg-white dark:bg-card"),
-              )}
-            >
-              <span className={isActive ? "text-white" : config.color}>
-                {config.icon}
-              </span>
-              {status}
-            </Button>
-          );
-        })}
+    <div className="flex flex-wrap items-center gap-3 animate-in">
+      {/* Filtro de Status */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline">Status:</span>
+        <Select value={currentStatus} onValueChange={(val) => onStatusChange(val as any)}>
+          <SelectTrigger className="h-9 w-[180px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg text-sm">
+            <SelectValue placeholder="Filtrar por Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Todos">Todos os Status</SelectItem>
+            {STATUS_LIST.map((status) => (
+              <SelectItem key={status} value={status}>{status}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Filtro de Postura */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider hidden sm:inline">Postura:</span>
+        <Select value={currentPostura} onValueChange={(val) => onPosturaChange(val as any)}>
+          <SelectTrigger className="h-9 w-[180px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg text-sm">
+            <SelectValue placeholder="Filtrar por Postura" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Todas">Todas as Posturas</SelectItem>
+            {POSTURAS.map((postura) => (
+              <SelectItem key={postura} value={postura}>{postura}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Botão Limpar */}
+      {hasActiveFilters && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={clearFilters}
+          className="h-9 px-3 text-slate-500 hover:text-rose-500 gap-2"
+        >
+          <X className="h-4 w-4" />
+          Limpar
+        </Button>
+      )}
     </div>
   );
-}
+}
