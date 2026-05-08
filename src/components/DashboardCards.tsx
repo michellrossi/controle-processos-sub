@@ -53,10 +53,11 @@ export function DashboardCards({ processos }: DashboardCardsProps) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{card.label}</p>
-                  <p className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">
+                  <p className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-white mt-1">
                     {card.value}
                   </p>
                 </div>
+
                 <p className="text-xs text-slate-400 dark:text-slate-500">{card.description}</p>
               </div>
               
